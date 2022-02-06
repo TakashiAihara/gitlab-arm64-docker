@@ -1,0 +1,31 @@
+version: "3.9"
+services:
+  web:
+    image: yrzr/gitlab-ce-arm64v8:latest
+    container_name: gitlab
+    ports:
+      - ${SSH_PORT}:${SSH_PORT}
+      - ${HTTP_PORT}:80
+      - ${HTTPS_PORT}:443
+    restart: always
+    privileged: true
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url = ${EXTERNAL_URL}
+        gitlab_rails['time_zone'] = 'Asia/Tokyo'
+        gitlab_rails['gitlab_ssh_host'] = ${SSH_HOST}
+        gitlab_rails['gitlab_shell_ssh_port'] = ${SSH_PORT}
+      GITLAB_ROOT_PASSWORD: ${ROOT_PASSWORD}
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - gitlab-ce-conf:/etc/gitlab:z
+      - gitlab-ce-logs:/var/log/gitlab:z
+      - gitlab-ce-data:/var/opt/gitlab:z
+volumes:
+  gitlab-ce-conf:
+  gitlab-ce-logs:
+  gitlab-ce-data:
